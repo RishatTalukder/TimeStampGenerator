@@ -1,28 +1,30 @@
 from pprint import pprint
 from pymediainfo import MediaInfo
 import os
+from collections import defaultdict
+import datetime
 
 #get all files in the directory
 path = "/home/itvaya/Desktop/recording"
 files = os.listdir(path)
-
+ 
 pprint(files)
 
-
-def format_duration(duration):
-    hours = int(duration / 3600)
-    minutes = int((duration % 3600) / 60)
-    seconds = int(duration % 60)
-    return f"{hours:02}:{minutes:02}:{seconds:02}"
-
-
+file_duration_hash = defaultdict(list)
+ 
 for file in files:
     
     media_info = MediaInfo.parse(f"/home/itvaya/Desktop/recording/{file}")
-    pprint(media_info.tracks)
+
     for track in media_info.tracks:
         if track.track_type == "Video":
+            time1 = datetime.datetime.strptime(track.other_duration[3], "%H:%M:%S.%f") 
+            print(time1.time())
+            print(track.other_duration[3]) 
+            print(datetime.timedelta(hours=0, minutes=0, seconds=0, microseconds=0))
+            file_duration_hash[file].append(track.duration)
+            file_duration_hash[file].append(track.other_duration[3])
+            
+    
 
-            print("Duration (raw value):", track.duration)
-            print("Duration (other values:")
-            pprint(track.other_duration[4])   
+pprint(file_duration_hash) 
